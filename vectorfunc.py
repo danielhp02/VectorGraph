@@ -5,12 +5,15 @@ from pygame.locals import *
 
 pygame.init()
 
-fps = 1
+fps = 60
 fpsClock = pygame.time.Clock()
 
 # Colours
 BLACK = (0,0,0)
 WHITE = (255,255,255)
+
+# Fonts
+latin_roman_italic = 'Resources\Fonts\Latin-Modern-Roman\lmroman10-italic.otf' #'./Resources/Fonts/Latin-Roman-Modern/lmroman10-italic.otf'
 
 width, height = 640, 480
 screen = pygame.display.set_mode((width, height))
@@ -26,7 +29,7 @@ def draw_arrow(colour, head_pos, tail_pos):
     head_normal = line.rotate(90)
     head_normal.scale_to_length(5)
 
-    print(line, head_centre, head_normal)
+    #print(line, head_centre, head_normal)
 
     point1 = head - head_centre + head_normal
     point2 = head - head_centre - head_normal
@@ -37,6 +40,20 @@ def draw_arrow(colour, head_pos, tail_pos):
     # Draw arrow head
     pygame.draw.aaline(screen, colour, point1, head)
     pygame.draw.aaline(screen, colour, point2, head)
+
+def draw_axes():
+    # Initialise Arial font at size 30
+    font = pygame.font.Font(latin_roman_italic, 25)
+
+    # Draw x axis
+    draw_arrow(BLACK, (width, height/2), (0, height/2))
+    x_axis_label = font.render('x', True, BLACK)
+    screen.blit(x_axis_label, (width-25, height/2-40))
+
+    # Draw y axis
+    draw_arrow(BLACK, (width/2, 0), (width/2, height))
+    y_axis_label = font.render('y', True, BLACK)
+    screen.blit(y_axis_label, (width/2+10, -10))
 
 # Game loop.
 while True:
@@ -50,9 +67,7 @@ while True:
     # Update.
 
     # Draw.
-    ## Draw axes
-    pygame.draw.line(screen, BLACK, (width/2, 0), (width/2, height))
-    draw_arrow(BLACK, (width/2 +10, 0), (width, height))
+    draw_axes()
 
     pygame.display.flip()
     fpsClock.tick(fps)
