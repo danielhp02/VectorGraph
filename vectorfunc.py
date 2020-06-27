@@ -1,7 +1,8 @@
-import sys
+import sys, math
 
 import pygame
 from pygame.locals import *
+import pygame.gfxdraw
 
 pygame.init()
 
@@ -55,6 +56,51 @@ def draw_axes():
     y_axis_label = font.render('y', True, BLACK)
     screen.blit(y_axis_label, (width/2+10, -10))
 
+class Function:
+    def __init__(self, f, domain, inclusivity=[0,0]):
+        """
+        f is a parametric/vector function. Best explained by example, the following
+        when passed would result in a circle of radius 50px to be drawn.
+        def f(t):
+            x = x = 50 * math.cos(t)
+            y = 50 * math.sin(t)
+            return pygame.Vector2(x, y)
+        """
+
+        self.f = f
+        self.domain = domain # List containing start and end t-values
+        self.inclusivity = inclusivity # a list containing two values, 1 or 0 indicating inclusivity of domain, default [0,0]
+        self.precision = 0.01 # replace with something based on frametime
+
+    def plot(self):
+        t = self.domain[0]
+        while t <= self.domain[1]:
+            point = self.f(t)
+
+            # Convert to pixel coordinates
+            x = math.floor(point.x + width/2)
+            y = math.floor(-point.y + height/2) # Y-value sign flipped to have the positive y-direction to be up
+
+            # Draw point if in display
+            if x >= 0 and x <= width:
+                if y >= 0 and y <= height:
+                    pygame.gfxdraw.pixel(screen, x, y, BLACK)
+
+            t += self.precision
+
+def f(t):
+    x = 50 * math.cos(t)
+    y = 50 * math.sin(t)
+    return pygame.Vector2(x, y)
+
+def r(t):
+    x = t
+    y = 0.01*math.pow(t, 2.0)
+    return pygame.Vector2(x, y)
+
+circle = Function(f, [0, math.pi], [1,1])
+parabola = Function(r, [-50, 200], [1,1])
+
 # Game loop.
 while True:
     screen.fill(WHITE)
@@ -68,6 +114,8 @@ while True:
 
     # Draw.
     draw_axes()
+    circle.plot()
+    parabola.plot()
 
     pygame.display.flip()
     fpsClock.tick(fps)
