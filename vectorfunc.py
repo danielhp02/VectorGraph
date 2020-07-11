@@ -87,7 +87,9 @@ class Function:
 
         # Get velocity function
         self.velocity = (sy.diff(self.f(t)[0], t), sy.diff(self.f(t)[1], t))
-        print(self.velocity[0])
+
+        # Get acceleration function
+        self.acceleration = (sy.diff(self.f(t)[0], t, 2), sy.diff(self.f(t)[1], t, 2))
 
     # Convert to pixel coordinates (uses math because faster)
     # Give a point relative to origin and get a point relative to display
@@ -123,6 +125,10 @@ class Function:
         if "velocity" in args:
             v = (self.velocity[0].subs(t, self.time), self.velocity[1].subs(t, self.time))
             draw_arrow(BLACK, (point[0] + v[0], point[1] - v[1]), point)
+
+        if "acceleration" in args:
+            a = (self.acceleration[0].subs(t, self.time), self.acceleration[1].subs(t, self.time))
+            draw_arrow(BLACK, (point[0] + a[0], point[1] - a[1]), point)
 
         self.time += 1
 
