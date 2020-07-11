@@ -66,7 +66,7 @@ def draw_axes():
     screen.blit(y_axis_label, (width/2+10, -10))
 
 class Function:
-    def __init__(self, f, domain, inclusivity=[0,0]):
+    def __init__(self, f, domain, t, inclusivity=[0,0]):
         """
         f is a parametric/vector function. Best explained by example, the following
         when passed would result in a circle of radius 50px to be drawn.
@@ -84,6 +84,8 @@ class Function:
         self.time = self.domain[0] # for drawing vectors
 
         # Get velocity function
+        self.velocity = (sy.diff(self.f(t)[0], t), sy.diff(self.f(t)[1], t))
+        print(self.velocity[0])
 
     # Convert to pixel coordinates (uses math because faster)
     # Give a point relative to origin and get a point relative to display
@@ -111,24 +113,33 @@ class Function:
         if self.time > self.domain[1]:
             self.time = self.domain[0]
 
+        point = self.get_coords(self.f(self.time))
+
         if "position" in args:
-            point = self.get_coords(f(self.time))
             draw_arrow(BLACK, point, origin)
+
+        if "velocity" in args:
+            v = (self.velocity[0].subs(t, self.time), self.velocity[1].subs(t, self.time))
+            draw_arrow(BLACK, (point[0] + v[0], point[1] - v[1]), point)
 
         self.time += 1
 
 def f(t):
     x = 50 * sy.cos(t)
     y = 50 * sy.sin(t)
+    if type(t) is sy.Symbol:
+        return (x, y)
     return pygame.Vector2(x, y)
 
 def r(t):
     x = t
     y = 0.01*t**2
+    if type(t) is sy.Symbol:
+        return (x, y)
     return pygame.Vector2(x, y)
 
-circle = Function(f, [0, 2*sy.pi], [1,1])
-parabola = Function(r, [-50, 200], [1,1])
+circle = Function(f, [0, 2*sy.pi], t, [1,1])
+parabola = Function(r, [-50, 150], t, [1,1])
 
 # Game loop.
 while True:
@@ -144,9 +155,10 @@ while True:
     # Draw.
     draw_axes()
     circle.plot_path()
-    #parabola.plot_path()
+    # parabola.plot_path()
 
-    circle.plot_vectors("position")
+    circle.plot_vectors("position", "velocity")
+    # parabola.plot_vectors("position", "velocity")
 
     pygame.display.flip()
     fpsClock.tick(fps)
