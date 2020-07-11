@@ -133,8 +133,8 @@ class Function:
         self.time += 1
 
 def f(t):
-    x = 50 * sy.cos(t)
-    y = 50 * sy.sin(t)
+    x = 50 * sy.cos(t) + 100
+    y = 50 * sy.sin(t) - 150
     if type(t) is sy.Symbol:
         return (x, y)
     return pygame.Vector2(x, y)
@@ -165,7 +165,7 @@ while True:
     circle.plot_path()
     # parabola.plot_path()
 
-    circle.plot_vectors("position", "velocity")
+    circle.plot_vectors("position", "velocity", "acceleration")
     # parabola.plot_vectors("position", "velocity")
 
     pygame.display.flip()
