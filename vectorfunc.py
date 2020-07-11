@@ -22,6 +22,8 @@ latin_roman_italic = 'Resources\Fonts\Latin-Modern-Roman\lmroman10-italic.otf' #
 width, height = 640, 480
 screen = pygame.display.set_mode((width, height))
 
+origin = (width/2, height/2)
+
 # Symbols for maths functions
 t  = sy.symbols('t')
 
@@ -68,7 +70,7 @@ class Function:
         f is a parametric/vector function. Best explained by example, the following
         when passed would result in a circle of radius 50px to be drawn.
         def f(t):
-            x = x = 50 * sy.cos(t)
+            x = 50 * sy.cos(t)
             y = 50 * sy.sin(t)
             return pygame.Vector2(x, y)
         """
@@ -78,25 +80,41 @@ class Function:
         self.inclusivity = inclusivity # a list containing two values, 1 or 0 indicating inclusivity of domain, default [0,0]
         self.precision = 0.01 # replace with something based on frametime
 
+        self.time = self.domain[0] # for drawing vectors
+
         # Get velocity function
 
+    # Convert to pixel coordinates (uses math because faster)
+    # Give a point relative to origin and get a point relative to display
+    def get_coords(self, point):
+        return (math.floor(point[0] + origin[0]),
+                math.floor(-point[1] + origin[1])) # Y-value sign flipped to have the positive y-direction to be up
 
     def plot_path(self):
-        # *args should be a list of strings containing additional drawing options such as "position", velocity" or "acceleration"
-        t = self.domain[0]
-        while t <= self.domain[1]:
-            point = self.f(t)
-
-            # Convert to pixel coordinates
-            x = math.floor(point.x + width/2)
-            y = math.floor(-point.y + height/2) # Y-value sign flipped to have the positive y-direction to be up
+        a = self.domain[0]
+        while a <= self.domain[1]: # while loop with hundreds of iterations = bad performance
+            point = self.f(a)
+            coords = self.get_coords(point)
 
             # Draw point if in display
-            if x >= 0 and x <= width:
-                if y >= 0 and y <= height:
-                    pygame.gfxdraw.pixel(screen, x, y, BLACK)
+            if coords[0] >= 0 and coords[0] <= width:
+                if coords[1] >= 0 and coords[1] <= height:
+                    pygame.gfxdraw.pixel(screen, coords[0], coords[1], BLACK)
 
-            t += self.precision
+            a += self.precision
+
+    # Trying plot_vectors as a seperate function to allow for optimising plot_path in future
+    def plot_vectors(self, *args):
+        # *args should be a list of strings containing additional drawing options such as "position", velocity" or "acceleration"
+
+        if self.time > self.domain[1]:
+            self.time = self.domain[0]
+
+        if "position" in args:
+            point = self.get_coords(f(self.time))
+            draw_arrow(BLACK, point, origin)
+
+        self.time += 1
 
 def f(t):
     x = 50 * sy.cos(t)
@@ -125,7 +143,9 @@ while True:
     # Draw.
     draw_axes()
     circle.plot_path()
-    parabola.plot_path()
+    #parabola.plot_path()
+
+    circle.plot_vectors("position")
 
     pygame.display.flip()
     fpsClock.tick(fps)
