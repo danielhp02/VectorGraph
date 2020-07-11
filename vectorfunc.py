@@ -1,4 +1,5 @@
 import sys
+import math
 import sympy as sy
 
 import pygame
@@ -80,18 +81,15 @@ class Function:
         # Get velocity function
 
 
-    def plot(self, *args):
+    def plot_path(self):
         # *args should be a list of strings containing additional drawing options such as "position", velocity" or "acceleration"
         t = self.domain[0]
         while t <= self.domain[1]:
             point = self.f(t)
 
             # Convert to pixel coordinates
-            x = sy.floor(point.x + width/2)
-            y = sy.floor(-point.y + height/2) # Y-value sign flipped to have the positive y-direction to be up
-
-            # Get velocity vector if requested
-
+            x = math.floor(point.x + width/2)
+            y = math.floor(-point.y + height/2) # Y-value sign flipped to have the positive y-direction to be up
 
             # Draw point if in display
             if x >= 0 and x <= width:
@@ -126,8 +124,8 @@ while True:
 
     # Draw.
     draw_axes()
-    circle.plot()
-    parabola.plot()
+    circle.plot_path()
+    parabola.plot_path()
 
     pygame.display.flip()
     fpsClock.tick(fps)
