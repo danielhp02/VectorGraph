@@ -1,4 +1,5 @@
-import sys, math
+import sys
+import sympy as sy
 
 import pygame
 from pygame.locals import *
@@ -16,8 +17,12 @@ WHITE = (255,255,255)
 # Fonts
 latin_roman_italic = 'Resources\Fonts\Latin-Modern-Roman\lmroman10-italic.otf' #'./Resources/Fonts/Latin-Roman-Modern/lmroman10-italic.otf'
 
+# Set up output window
 width, height = 640, 480
 screen = pygame.display.set_mode((width, height))
+
+# Symbols for maths functions
+t  = sy.symbols('t')
 
 def draw_arrow(colour, head_pos, tail_pos):
     head = pygame.Vector2(head_pos)
@@ -62,8 +67,8 @@ class Function:
         f is a parametric/vector function. Best explained by example, the following
         when passed would result in a circle of radius 50px to be drawn.
         def f(t):
-            x = x = 50 * math.cos(t)
-            y = 50 * math.sin(t)
+            x = x = 50 * sy.cos(t)
+            y = 50 * sy.sin(t)
             return pygame.Vector2(x, y)
         """
 
@@ -72,14 +77,21 @@ class Function:
         self.inclusivity = inclusivity # a list containing two values, 1 or 0 indicating inclusivity of domain, default [0,0]
         self.precision = 0.01 # replace with something based on frametime
 
-    def plot(self):
+        # Get velocity function
+
+
+    def plot(self, *args):
+        # *args should be a list of strings containing additional drawing options such as "position", velocity" or "acceleration"
         t = self.domain[0]
         while t <= self.domain[1]:
             point = self.f(t)
 
             # Convert to pixel coordinates
-            x = math.floor(point.x + width/2)
-            y = math.floor(-point.y + height/2) # Y-value sign flipped to have the positive y-direction to be up
+            x = sy.floor(point.x + width/2)
+            y = sy.floor(-point.y + height/2) # Y-value sign flipped to have the positive y-direction to be up
+
+            # Get velocity vector if requested
+
 
             # Draw point if in display
             if x >= 0 and x <= width:
@@ -89,16 +101,16 @@ class Function:
             t += self.precision
 
 def f(t):
-    x = 50 * math.cos(t)
-    y = 50 * math.sin(t)
+    x = 50 * sy.cos(t)
+    y = 50 * sy.sin(t)
     return pygame.Vector2(x, y)
 
 def r(t):
     x = t
-    y = 0.01*math.pow(t, 2.0)
+    y = 0.01*t**2
     return pygame.Vector2(x, y)
 
-circle = Function(f, [0, math.pi], [1,1])
+circle = Function(f, [0, 2*sy.pi], [1,1])
 parabola = Function(r, [-50, 200], [1,1])
 
 # Game loop.
