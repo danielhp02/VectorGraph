@@ -73,6 +73,8 @@ class Function:
         def f(t):
             x = 50 * sy.cos(t)
             y = 50 * sy.sin(t)
+            if type(t) is sy.Symbol:
+                return (x, y)
             return pygame.Vector2(x, y)
         """
 
