@@ -32,23 +32,24 @@ def draw_arrow(colour, head_pos, tail_pos):
     tail = pygame.Vector2(tail_pos)
     line = pygame.Vector2(head[0] - tail[0], head[1] - tail[1])
 
-    head_centre = pygame.Vector2(line)
-    head_centre.scale_to_length(15)
+    if line.magnitude() != 0:
+        head_centre = pygame.Vector2(line)
+        head_centre.scale_to_length(15)
 
-    head_normal = line.rotate(90)
-    head_normal.scale_to_length(5)
+        head_normal = line.rotate(90)
+        head_normal.scale_to_length(5)
 
-    #print(line, head_centre, head_normal)
+        #print(line, head_centre, head_normal)
 
-    point1 = head - head_centre + head_normal
-    point2 = head - head_centre - head_normal
+        point1 = head - head_centre + head_normal
+        point2 = head - head_centre - head_normal
 
-    # Draw line
-    pygame.draw.aaline(screen, colour, tail, head)
+        # Draw line
+        pygame.draw.aaline(screen, colour, tail, head)
 
-    # Draw arrow head
-    pygame.draw.aaline(screen, colour, point1, head)
-    pygame.draw.aaline(screen, colour, point2, head)
+        # Draw arrow head
+        pygame.draw.aaline(screen, colour, point1, head)
+        pygame.draw.aaline(screen, colour, point2, head)
 
 def draw_axes():
     # Initialise Arial font at size 30
